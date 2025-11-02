@@ -105,7 +105,7 @@ cp config.default.json config.json
 ```
 
 **配置说明：**
-- `EMAIL`: 邮件服务器配置（支持 163 邮箱等）
+- `EMAIL`: 邮件服务器配置（需使用 163 邮箱）
   - `SENDER_NAME`: 发送者名称（用于 RFC 2971 IMAP ID 命令，必需）
   - `SENDER_EMAIL`: 发送者邮箱地址
   - `SENDER_PASSWORD`: 邮箱密码或授权码
@@ -153,7 +153,7 @@ python main.py
 
 学生发送邮件：
 ```
-主题：学习单词
+主题：学习英语单词
 正文：请帮我解释单词 "ephemeral"
 ```
 
@@ -168,7 +168,7 @@ python main.py
 
 学生发送邮件：
 ```
-主题：检查背诵
+主题：俄语单词背诵检查
 正文：
 苹果 яблоко яблоки
 书 книга книги
