@@ -1,5 +1,17 @@
-__pycache__/*
-db/*
-log/*
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+.Python
 
+# Database
+db/
+
+# Logs
+log/
+
+# Config (contains sensitive info)
 config.json

@@ -85,12 +85,11 @@ def main():
     agent = _initiate_agent()
     
     while True:
-        mail_server.select("INBOX")
-
         print("开始监听邮箱...")
         try:
+            # mail_server 初始化时已自动选择 INBOX，无需再次调用 select
             status, email_ids = mail_server.search("UTF-8", "UNSEEN")
-            if email_ids or len(email_ids) > 0:
+            if email_ids and len(email_ids) > 0:
                 checked_email_ids = []
                 for email_id in email_ids:
                     if len(email_id) == 0:
@@ -116,7 +115,16 @@ def main():
                     raw_email = email_data[0][1]
                     msg = message_from_bytes(raw_email)
 
-                    subject = decode_header(msg.get("Subject", ""))[0][0].decode("utf-8")
+                    subject_header = decode_header(msg.get("Subject", ""))
+                    if subject_header and len(subject_header) > 0:
+                        subject_part = subject_header[0]
+                        if isinstance(subject_part[0], bytes):
+                            subject = subject_part[0].decode(subject_part[1] or "utf-8", errors="ignore")
+                        else:
+                            subject = str(subject_part[0])
+                    else:
+                        subject = ""
+
                     from_addr = parseaddr(msg.get("From", ""))[1]
                     email_body = _get_email_body(msg)
 
@@ -130,7 +138,7 @@ def main():
                         发送这封邮件的学生的邮箱地址是：{from_addr}
 
                         注意！
-                        如果你认为这封邮件和各个老师没有关系，请调用能力恢复邮件未读状态，并返回“邮件未读状态恢复成功”
+                        如果你认为这封邮件和所有老师没有关系，请调用能力恢复邮件未读状态，并返回“邮件未读状态恢复成功”
                         如果你认为这封邮件和某个老师有关，请一定要把老师的回复以邮件的形式发送给学生，并返回“邮件发送成功”
                         邮件必须是html格式，风格清爽，使用卡片式布局（如果有标题请务必隐藏，因为实在太丑了），一定要照顾移动端用户的体验，注意内容中不要包含任何多余的字符串!
                         注意卡片之间不要嵌套！不要嵌套！不要嵌套！不要嵌套！
@@ -145,8 +153,16 @@ def main():
                     )
                     time.sleep(10)
         
+        except (imaplib.IMAP4.abort, imaplib.IMAP4.error, OSError, EOFError, AttributeError) as e:
+            print(f"IMAP 连接错误：{e}，mail_server 包装类将在下次操作时自动重连")
+            # 标记连接无效，让包装类在下一次操作时重连
+            if hasattr(mail_server, '_server'):
+                mail_server._server = None
+            time.sleep(10)  # 短暂等待后继续
         except Exception as e:
             print(f"处理邮件时发生异常：{e}")
+            import traceback
+            traceback.print_exc()
 
         time.sleep(300) # 每5分钟检查一次邮箱
         

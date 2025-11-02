@@ -1,4 +1,5 @@
 from language_learning_agent_factory import create_language_learning_agent
+from russian_word_recite_check_agent import russian_word_recite_check_agent
 from history_message_summarizer import summarizer_agent
 from mail_server import mail_server as imap_mail_server
 from langchain.tools import tool
@@ -59,6 +60,21 @@ def english_word_learning(mail_address: str, input_message: str) -> str:
     return teacher_message
 
 @tool
+def russian_word_recite_check(input_message: str) -> str:
+    """
+    检查学生俄语单词背诵情况的老师
+
+    Args:
+        input_message: 用户输入的消息
+
+    Returns:
+        老师根据学生输入的信息，返回的回答内容
+    """
+    result = russian_word_recite_check_agent.invoke(input_message).content
+    return result
+
+
+@tool
 def send_email(to: str, subject: str, content: str) -> int:
     """
     发送邮件到邮箱
@@ -91,7 +107,7 @@ def send_email(to: str, subject: str, content: str) -> int:
         logger.info(f"邮件发送成功：{to}")
         return 0
     except Exception as e:
-        logger.info(f"邮件发送失败：{to}", e)
+        logger.error(f"邮件发送失败：{to}, 错误：{e}")
         return 1
 
 @tool
@@ -107,10 +123,6 @@ def resume_email_status(email_id: str) -> str:
         恢复失败，返回"邮件未读状态恢复失败"
     """
     try:
-        # 确保选择了 INBOX 邮箱
-        imap_mail_server.select("INBOX")
-        
-
         email_id = email_id.encode() if type(email_id) == str else email_id
         logger.info(f"恢复邮件未读状态：{email_id}")
 
@@ -131,6 +143,7 @@ def resume_email_status(email_id: str) -> str:
 tools = [
     send_email,
     english_word_learning,
+    russian_word_recite_check,
     resume_email_status
 ]
 
