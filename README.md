@@ -227,7 +227,7 @@ python main.py
 - 使用 `ContextSchema` 定义上下文结构，包含 `cur_email_id` 和 `sent_email_id`
 
 ### language_learning_agent_factory.py
-创建英语单词学习智能体，配置了详细的系统提示词，定义了 5 阶段教学流程。
+创建单词学习智能体（代码中以英语为例子，实际上只要deepseek支持可以配置任何语言），配置了详细的系统提示词，定义了 5 阶段教学流程。
 
 ### russian_word_recite_check_agent.py
 创建俄语单词背诵检查智能体，配置了专业的检查规则，支持多种词性的单词检查。
